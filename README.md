@@ -2,6 +2,8 @@
 
 This project uses a ESP8266 WeMos D1 mini board to read DHT11 sensor temperature and humidity values and write them to a data.csv file using LittleFS library.
 
+![App screenshot](./docs/img/interface1.png)
+
 ## Prerequisites
 - Platformio 
 - ESP8266 WeMos D1 mini board
@@ -70,6 +72,15 @@ After a successful upload, the device will:
 
 - Connect to your WiFi network
 - Initialize the LittleFS file system
+- Start the server. The serial monitor will show the local IP assigned to the device, you can view the web interface accessing the IP address on your browser, the web interface allows you to view, download and delete the data from data.csv file:
+```bash
+  ...
+  WiFi connected
+  IP address: 192.168.0.100 <- This is the IP address assigned, it may be a different number
+  Waiting for NTP time
+  ...
+```
+![App screenshot](./docs/img/interface1.png)
 - Begin reading temperature and humidity from the DHT11 sensor every 60 seconds
 - Write the readings to data.csv in LittleFS
 
@@ -126,7 +137,3 @@ Issue: No output in Serial Monitor
 - Verify USB cable is properly connected
 - Check that the correct board and COM port are selected in PlatformIO
 - Try a different USB cable (some cables are charging-only)
-
-## Future Enhancements
-
-Web interface for data viewing and download.
