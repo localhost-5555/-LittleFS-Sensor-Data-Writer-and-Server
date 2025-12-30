@@ -72,19 +72,18 @@ void handleDashboard() {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    font-family:Arial;
+                    font-size: xx-large;
+                    font-family: arial;
                     margin:2rem;
                     text-align: center;
                     gap: 2rem;
                 }
                 .button {
-                    display: inline-block;
-                    margin: 10px 5px 0 0;
-                    padding: 10px 20px;
+                    display: flex;
+                    padding: 1rem;
                     color: white;
                     text-decoration: none;
                     border-radius: 5px;
-                    width: 120px;
                 }
                 .download {
                     background: #34D399;
@@ -98,6 +97,9 @@ void handleDashboard() {
                 .danger:hover {
                     background: #e94337;
                 }
+                #csv-table {
+                    width: 100%;
+                }
                 #csv-table tr:first-child td {
                     font-weight: bold;
                     background-color: #c6e2d7;
@@ -107,19 +109,52 @@ void handleDashboard() {
                     padding: 1rem;
                     border: 1px solid white;
                     border-radius: 5%;
-                    font-size: large;
+                    font-size: xx-large;
+                }
+                .container {
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                    height: 70vh;
+                    overflow-y: scroll;
+                }
+                #lastValues {
+                    display: flex;
+                    justify-content: center;
+                    padding: 2rem;
+                    border-radius: 5px;
+                    gap: 1rem;
+                    background: #34D399;
+                    font-weight: bold;
+                    color: white;
+                }
+                #lastValues div {
+                    padding-inline: 1rem;
+                    border-right: 5px solid #deede7;
+                }
+                .actionButtons {
+                    display: flex;
+                    gap: 1rem;
+                    position: fixed;
+                    bottom: 3rem;
                 }
             </style>
         </head>
         <body>
             <h1>LittleFS Sensor Data Writer and Server</h1>
-            <div>
+
+            <div class="actionButtons">
                 <a class="button download" href='/download'>Download CSV</a>
                 <a class="button danger" id="delete" href='/delete'>Delete Data</a>
             </div>
-            <table id="csv-table">
-                
-            </table>
+
+            <div id="lastValues">
+                <div>Last reading: </div>
+            </div>
+
+            <div class="container">
+                <table id="csv-table"></table>
+            </div>
             <script>
                 // Wait for DOM to be ready
                 document.addEventListener('DOMContentLoaded', () => {
@@ -138,10 +173,21 @@ void handleDashboard() {
                     async function loadCSVData() {
                         const response = await fetch('/data');
                         const csvText = await response.text();
-                        
-                        console.log(csvText);
                         const rows = csvText.split('\n');
-                        console.log(rows.length);
+
+                        // Add last values
+                        const lastValuesContainer = document.getElementById("lastValues")
+                        lastValues = rows[rows.length - 2]; // Get last non-empty line
+                        lastValues = lastValues.split(',');
+
+                        lastValues.forEach(column => {
+                            if (column.length > 1) { // Skip empty lines
+                                const div = document.createElement('div');
+                                div.textContent = column;
+                            lastValuesContainer.appendChild(div);
+                            }
+                        });
+
                         const table = document.getElementById('csv-table');
                         table.innerHTML = ""; // Clear existing data
 
@@ -271,7 +317,7 @@ void loop() {
     static unsigned long lastReadTime = 0;
     unsigned long currentTime = millis();
     
-    if (currentTime - lastReadTime >= 10000) {  // 3 minutes
+    if (currentTime - lastReadTime >= 180000) {  // 3 minutes
         lastReadTime = currentTime;
         
         // Check if time is valid
